@@ -1,75 +1,66 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h>    
+#include <stdlib.h>   // contiene la funcion malloc()
 
-typedef struct snodo
-{ // snodo es el nombre de la estructura
-    int valor;
-    struct snodo *sig; // El puntero siguiente para recorrer la lista enlazada
-} tnodo;               // tnodo es el tipo de dato para declarar la estructura
+struct node   // representa un nodo con un dato y un puntero al nodo siguiente
+{
+    int i;
+    struct node *next;
+};
 
-typedef tnodo *tpuntero; // Puntero al tipo de dato tnodo para no utilizar punteros de punteros
-
-void insertarEnLista(tpuntero *cabeza, int e);
-void imprimirLista(tpuntero cabeza);
-void borrarLista(tpuntero *cabeza);
+void insert(struct node **, int);   // funcion para insertar un nodo en la lista
+void view(struct node *);           // representar la lista 
+void delete(struct node **);        // borrar la lista
 
 int main()
 {
+    int i;                      // dato a insertar en la lista
+    struct node *top = NULL;    // puntero para acceder a los nodos de la lista
+                                
+    printf("data: ");
+    scanf("%i", &i);
 
-    int e;
-    tnodo *cabeza; // Indica la cabeza de la lista enlazada, si la perdemos no podremos acceder a la lista
-    cabeza = NULL;   // Se inicializa la cabeza como NULL ya que no hay ningun nodo cargado en la lista
-
-    printf("Ingrese elementos, -1 para terminar: ");
-    scanf("%d", &e);
-
-    while (e != -1)
+    while (i != -1)
     {
-        insertarEnLista(&cabeza, e);
-        printf("Ingresado correctamente");
-        printf("\n");
-        printf("Ingrese elementos, -1 para terminar: ");
-        scanf("%d", &e);
+        insert(&top, i);
+        printf("data: ");
+        scanf("%i", &i);
     }
 
-    printf("\nSe imprime la lista cargada: ");
-    imprimirLista(cabeza);
-
-    printf("\nSe borra la lista cargada\n");
-    borrarLista(&cabeza);
-
-    printf("\n");
-    system("PAUSE");
+    view(top);
+    delete(&top);
+    view(top);
 
     return 0;
 }
 
-void insertarEnLista(tpuntero *cabeza, int e)
+void insert(struct node **top, int i)  
 {
-    tnodo *nuevo;                // Creamos un nuevo nodo
-    nuevo = malloc(sizeof(tnodo)); // Utilizamos malloc para reservar memoria para ese nodo
-    nuevo->valor = e;              // Le asignamos el valor ingresado por pantalla a ese nodo
-    nuevo->sig = *cabeza;          // Le asignamos al siguiente el valor de cabeza
-    *cabeza = nuevo;               // Cabeza pasa a ser el ultimo nodo agregado
-}
+    struct node *new;                                   // crear un nuevo nodo
+    new = (struct node *) malloc(sizeof(struct node));  // reservar memoria para ese nodo
+    new->i = i;                                         // insertar el dato en su respectivo campo del nodo
+    new->next = *top;                                   // el puntero al siguiente elemento pasa a apuntar al elemento anterior 
+    *top = new;                                         // almacenamos el nuevo elemento en la ultima posicion de la lista
+}                                                       // y el puntero top pasa a apuntar a el nuevo elemento
 
-void imprimirLista(tpuntero cabeza)
+void view(struct node *top)
 {
-    while (cabeza != NULL)
-    {                                 // Mientras cabeza no sea NULL
-        printf("%4d", cabeza->valor); // Imprimimos el valor del nodo
-        cabeza = cabeza->sig;         // Pasamos al siguiente nodo
+    if (top == NULL) {printf("lista vacia"); }
+    
+    while(top != NULL)
+    {
+        printf("%i -> %p : %p\n", top->i, &(*top->next), &(*top));
+        top = top->next;
     }
 }
 
-void borrarLista(tpuntero *cabeza)
+void delete(struct node **top)
 {
-    tpuntero actual; // Puntero auxiliar para eliminar correctamente la lista
+    struct node *tmp_node;
 
-    while (*cabeza != NULL)
-    {                             // Mientras cabeza no sea NULL
-        actual = *cabeza;         // Actual toma el valor de cabeza
-        *cabeza = (*cabeza)->sig; // Cabeza avanza 1 posicion en la lista
-        free(actual);             // Se libera la memoria de la posicion de Actual (el primer nodo), y cabeza queda apuntando al que ahora es el primero
+    while(*top != NULL)
+    {
+        tmp_node = *top; 
+        *top = (*top)->next;  
+        free(tmp_node); 
     }
-}
+}    
